@@ -14,8 +14,18 @@
 
 
 <div class="container-fluid mt-3" id="app">
-    <input type="text" class="form-control" v-model="criterioDeBusqueda"
-        placeholder="Ingresar un criterio de busqueda...">
+    <h1>PNT2 TP2 Sebastian Katz</h1>
+    <input type="text" class="form-control" v-model="criterioDeBusquedaDNI" placeholder="Ingrese DNI">
+    <div class="alert alert-danger" role="alert" v-if="criterioDeBusquedaDNI.length<3">Ingrese 3 caracteres</div>
+    <div class="alert alert-success" role="alert" v-if="criterioDeBusquedaDNI.length>=3">
+        Mínima cantidad de caracteres correctos.
+    </div>
+    <br>
+    <input type="text" class="form-control" v-model="criterioDeBusquedaNyA" placeholder="Ingrese Nombre y Apellido">
+    <div class="alert alert-danger" role="alert" v-if="criterioDeBusquedaNyA.length<3">Ingrese 3 caracteres</div>
+    <div class="alert alert-success" role="alert" v-if="criterioDeBusquedaNyA.length>=3">
+        Mínima cantidad de caracteres correctos.
+    </div>
     <br>
     <div class="card-deck m-0">
         <div class="row">
@@ -40,7 +50,9 @@
         el: '#app',
         data: {
             criterioDeBusqueda: '',
-            //Aquí, en este array es donde tienen que agregar su información
+            criterioDeBusquedaDNI: '',
+            criterioDeBusquedaNyA: '',
+            cantMinCaracteres: 3,
             personas: [
                 {
                     nombre: "Daniel",
@@ -49,25 +61,85 @@
                     dni: "20442873"
                 },
                 {
-                    nombre: "...",
-                    apellido: "...",
-                    correo: "...",
-                    dni: "..."
+                    nombre: "Sebastian",
+                    apellido: "Katz",
+                    correo: "sebikatzcatz@gmail.com",
+                    dni: "41702821"
                 },
+                {
+                    nombre: "Gustavo",
+                    apellido: "Katz",
+                    correo: "gustavokatz@hotmail.com",
+                    dni: "12345678"
+                },
+                {
+                    nombre: "Gabriela",
+                    apellido: "catz",
+                    correo: "gabrielacatz@hotmail.com",
+                    dni: "54325324"
+                },
+                {
+                    nombre: "Mariano",
+                    apellido: "Apellido",
+                    correo: "mapellido@hotmail.com",
+                    dni: "98765432"
+                },
+                {
+                    nombre: "Lucas",
+                    apellido: "Perez",
+                    correo: "lucasPerez@hotmail.com",
+                    dni: "45324654"
+                },
+                {
+                    nombre: "Oscar",
+                    apellido: "Apellido",
+                    correo: "oApellido@hotmail.com",
+                    dni: "45322243"
+                }
             ]
 
         },
         computed: {
             personasFiltradas() {
-                return this.personas.filter((persona) => {
-                    let registroCompleto = `${persona.nombre} ${persona.apellido} ${persona.dni} ${persona.correo}`
-                    return registroCompleto.toLowerCase().includes(this.criterioDeBusqueda.toLowerCase())
-                });
-            }
+                if(this.validarNyA() && this.validarDNI()) {
+                    return this.filtrarDoble()
+                }
+                if(this.validarNyA()) {
+                    return this.filtrarPorNyA()
+                }
+                if(this.validarDNI()) {
+                    return this.filtrarPorDNI()
+                }
+                return this.personas             
+            }          
         },
         methods: {
             getNombreCompleto(persona) {
                 return `${persona.nombre} ${persona.apellido}`
+            },
+            filtrarPorDNI() {
+                return this.personas.filter((persona) => {
+                    let registroCompleto = `${persona.dni}`
+                    return registroCompleto.toLowerCase().includes(this.criterioDeBusquedaDNI.toLowerCase())
+                })
+            },
+            filtrarPorNyA() {
+                return this.personas.filter((persona) => {
+                    let registroCompleto = `${persona.nombre} ${persona.apellido}`
+                    return registroCompleto.toLowerCase().includes(this.criterioDeBusquedaNyA.toLowerCase())
+                })
+            },
+            filtrarDoble() {
+                return this.personas.filter((persona) => {
+                    let registroCompleto = `${persona.nombre} ${persona.apellido} ${persona.dni}`                        
+                    return (registroCompleto.toLowerCase().includes(this.criterioDeBusquedaNyA.toLowerCase()) && (registroCompleto.toLowerCase().includes(this.criterioDeBusquedaDNI.toLowerCase())))
+                })
+            },
+            validarNyA() {
+                return this.criterioDeBusquedaNyA.length >= this.cantMinCaracteres
+            },
+            validarDNI() {
+                return this.criterioDeBusquedaDNI.length >= this.cantMinCaracteres
             }
         }
     });
